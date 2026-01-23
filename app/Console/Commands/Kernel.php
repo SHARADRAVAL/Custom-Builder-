@@ -24,7 +24,6 @@ class Kernel extends ConsoleKernel
     }
 
 
-
     protected function jobs()
     {
         $this->load(__DIR__ . '/Jobs');
