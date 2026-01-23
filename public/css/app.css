@@ -1,0 +1,420 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* .col-12 {
+    padding-left: 0;
+    padding-right: 0;
+} */
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    color: #ffffff;
+    padding-top: 0.5rem;
+    transition: width 0.25s ease;
+    z-index: 1100;
+}
+
+/* Minimized sidebar */
+.sidebar.minimized {
+    width: 80px;
+}
+
+/* Expand on hover */
+.sidebar.minimized:hover {
+    width: 240px;
+}
+
+/* =========================================================
+   SIDEBAR BRAND
+========================================================= */
+.sidebar .brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #1f2937;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.sidebar .brand span {
+    margin-left: 8px;
+}
+
+/* Hide brand text when minimized */
+.sidebar.minimized .brand span {
+    display: none;
+}
+
+/* Show brand text on hover */
+.sidebar.minimized:hover .brand span {
+    display: inline;
+}
+
+/* Toggle button */
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* Hide toggle when minimized */
+.sidebar.minimized .sidebar-toggle {
+    display: none;
+}
+
+/* Show toggle on hover */
+.sidebar.minimized:hover .sidebar-toggle {
+    display: block;
+}
+
+.sidebar-toggle i {
+    font-size: 1.6rem;
+}
+
+/* =========================================================
+   SIDEBAR LINKS
+========================================================= */
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    position: relative;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.brand-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.brand-inner i {
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar.minimized .sidebar-toggle {
+    display: none;
+}
+
+.sidebar.minimized:hover .sidebar-toggle {
+    display: block;
+    position: absolute;
+    right: 10px;
+}
+
+.sidebar.minimized .brand {
+    justify-content: center;
+}
+
+.sidebar.minimized .brand-inner {
+    justify-content: center;
+    width: 100%;
+}
+
+.sidebar.minimized .brand-inner span {
+    display: none;
+}
+
+/* Bigger & centered icon */
+.sidebar.minimized .brand-inner i {
+    font-size: 1.9rem;
+    /* 👈 bigger icon */
+}
+
+
+
+
+/* Icons */
+.sidebar a i {
+    font-size: 1.25rem;
+    min-width: 24px;
+    text-align: center;
+    transition: font-size 0.25s ease;
+}
+
+/* Minimized icon-only layout */
+.sidebar.minimized a {
+    /* align-items: center; */
+    /* justify-content: center; */
+    padding: 12px 29px;
+}
+
+/* Bigger icons when minimized */
+.sidebar.minimized a i {
+    font-size: 1.2rem;
+    min-width: auto;
+}
+
+/* Hide text when minimized */
+.sidebar.minimized a span {
+    display: none;
+}
+
+/* Show text on hover */
+.sidebar.minimized:hover a span {
+    display: inline;
+}
+
+/* Hover state */
+.sidebar a:hover {
+    background: #ffffff;
+    color: #111827;
+}
+
+/* Active menu */
+.modern-scroll a.active,
+.modern-scroll a:hover.active {
+    background: #ffffff;
+    color: #111827;
+    font-weight: 600;
+}
+.sidebar a.active {
+    background: #ffffff;
+    color: #111827;
+    font-weight: 600;
+}
+/* Active icon */
+.sidebar a.active i {
+    color: #0a58ca;
+}
+/* Active left indicator */
+.sidebar a.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #0a58ca;
+}
+
+/* =========================================================
+   SIDEBAR SUBTITLE
+========================================================= */
+.sidebar-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Hide subtitle when minimized */
+.sidebar.minimized .sidebar-subtitle {
+    display: none;
+}
+
+/* Show subtitle on hover */
+.sidebar.minimized:hover .sidebar-subtitle {
+    display: block;
+}
+
+/* =========================================================
+   SIDEBAR FOOTER
+========================================================= */
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #1f2937;
+}
+
+/* Hide footer text when minimized */
+.sidebar.minimized .sidebar-footer span {
+    display: none;
+}
+
+/* Show footer text on hover */
+.sidebar.minimized:hover .sidebar-footer span {
+    display: inline;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 240px;
+    right: 0;
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 1000;
+    transition: left 0.25s ease;
+}
+
+/* Shift topbar when sidebar minimized */
+.sidebar.minimized~.topbar {
+    left: 80px;
+}
+
+.sidebar.minimized.hover-open~.topbar {
+    left: 240px;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+.content {
+    margin-left: 240px;
+    /* width: 84%; */
+    width: calc(100% - 240px);
+    padding: 80px 20px;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+
+/* Shift content when sidebar minimized */
+.sidebar.minimized~.content {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+}
+
+
+/* =========================================================
+   MODERN SCROLLBAR
+========================================================= */
+.modern-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #b0b7c3 transparent;
+}
+
+.modern-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modern-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modern-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(108, 117, 125, 0.6);
+    border-radius: 10px;
+}
+
+.modern-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #6c757d;
+}
+
+/* =========================================================
+   TABLES   
+========================================================= */
+table.dataTable {
+    width: 100% !important;
+}
+
+.table-responsive {
+    overflow: visible !important;
+     /* padding: 0 10px; add some padding to avoid content touching edges */
+    
+}
+
+.dropdown-menu {
+    position: absolute !important;
+    will-change: transform;
+}
+
+.dataTables_wrapper {
+    overflow: visible;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.card-body {
+    padding: 0;
+     margin: 0 auto; /* center inside content */
+    width: 100%;
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.btn:hover {
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-success:hover {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-light:hover {
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+    color: #000;
+}
+
+.btn-dark:hover {
+    background-color: #212529;
+    border-color: #212529;
+}
+
+.badge {
+ --bs-badge-padding-x: 0;
+}
