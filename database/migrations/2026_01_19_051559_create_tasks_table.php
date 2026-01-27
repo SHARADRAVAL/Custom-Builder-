@@ -21,28 +21,33 @@ return new class extends Migration
             // Task timing
             $table->dateTime('start_time');
             $table->dateTime('end_time')->nullable();
+            $table->integer('due_days')->nullable();
 
             // User relation
             $table->foreignId('user_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             // Task status
-            $table->enum('status', ['pending', 'in_progress', 'completed'])
-                  ->default('pending');
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'template'])
+                ->default('pending');
 
             // Reminder control
             $table->boolean('reminder_sent')
-                  ->default(false)
-                  ->comment('Email reminder sent 15 minutes before start');
-
+                ->default(false)
+                ->comment('Email reminder sent 15 minutes before start');
+            
+            //Comment and feedback 
+            $table->text('comment')->nullable();
+            $table->text('feedback')->nullable();
+            
             // Task lifecycle timestamps
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
 
             // Reapeat Reminder
-              $table->enum('repeat_type', ['none', 'daily', 'weekly', 'monthly'])
-                  ->default('none');
+            $table->enum('repeat_type', ['none', 'daily', 'weekly', 'monthly'])
+                ->default('none');
 
 
             // Laravel default timestamps

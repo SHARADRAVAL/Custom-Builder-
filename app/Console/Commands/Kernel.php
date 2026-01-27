@@ -6,21 +6,29 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use App\Console\Commands\GenerateRecurringTasks;
+use App\Console\Commands\UpdateDueDays;
+
 
 
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
         GenerateRecurringTasks::class,
+        UpdateDueDays::class,
+
     ];
     protected function schedule(Schedule $schedule)
     {
+        //Generate recurring tasks
         $schedule->command('recurring:generate')
             ->everyMinute()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->onFailure(function () {
-                Log::error("Scheduler failed to run recurring:generate");
-            });
+            ->withoutOverlapping() 
+            ->appendOutputTo(storage_path('logs/schedule.log'));
+        
+        //Update due days 
+        $schedule->command('tasks:update-due')
+            ->daily()
+            ->appendOutputTo(storage_path('logs/schedule.log'));
     }
 
 

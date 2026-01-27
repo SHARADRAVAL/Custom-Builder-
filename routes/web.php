@@ -78,6 +78,9 @@ Route::resource('tasks', TaskController::class);
 Route::post('tasks/{task}/start', [TaskController::class, 'start'])->name('tasks.start');
 Route::post('tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
 Route::delete('tasks/{task}/delete', [TaskController::class, 'destroy'])->name('tasks.delete');
+// web.php
+Route::post('/tasks/{task}/comment-feedback', [TaskController::class, 'commentFeedback'])->name('tasks.comment_feedback');
+
 
 
 Route::get('/test-mail', function () {

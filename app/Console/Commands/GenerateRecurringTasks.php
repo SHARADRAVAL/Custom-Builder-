@@ -13,62 +13,33 @@ class GenerateRecurringTasks extends Command
     protected $signature = 'recurring:generate';
     protected $description = 'Generate tasks from recurring rules';
 
-    // public function handle(): int
-    // {
-    //     // 1. Eager load the relationship
-    //     $recurringTasks = RecurringTask::with('task')->get();
 
-    //     // 2. DEBUG: This will show up in storage/logs/laravel.log
-    //     Log::info("Recurring Generator Heartbeat: " . now()->toDateTimeString());
-
-    //     if ($recurringTasks->isEmpty()) {
-    //         $this->info('No recurring rules found in the database.');
-    //         return Command::SUCCESS;
-    //     }
-
-    //     $generatedCount = 0;
-
-    //     foreach ($recurringTasks as $recurring) {
-    //         // 3. Extra Debugging: Log which task we are checking
-    //         $this->info("Checking task: " . ($recurring->task->title ?? 'Unknown'));
-
-    //         if ($this->process($recurring)) {
-    //             $generatedCount++;
-    //         }
-    //     }
-
-    //     if ($generatedCount === 0) {
-    //         $this->info('No scheduled tasks due at this time. (Current Server Time: ' . now()->format('H:i') . ')');
-    //     } else {
-    //         $this->info("Success! {$generatedCount} task(s) generated.");
-    //     }
-
-    //     return Command::SUCCESS;
-    // }
 
     public function handle(): int
     {
         $logPath = storage_path('logs/schedule.log');
-        $status = "--- Automation Triggered at " . now()->toDateTimeString() . " ---\n";
+        $this->info("--- Automation Triggered at " . now()->toDateTimeString() . " ---");
 
-        // Force write to the file immediately
-        file_put_contents($logPath, $status, FILE_APPEND);
-        $this->info($status);
+        // 1. Use chunk() to prevent memory exhaustion if you have many tasks
+        // 2. We use with('task') to avoid N+1 query issues
+        RecurringTask::with('task')->chunk(100, function ($recurringTasks) use ($logPath) {
+            $logBuffer = "";
 
-        $recurringTasks = RecurringTask::with('task')->get();
+            foreach ($recurringTasks as $recurring) {
+                // Log local progress to buffer instead of writing to disk every loop
+                $logBuffer .= "Checking Rule ID: {$recurring->id} | Type: {$recurring->repeat_type}\n";
 
-        foreach ($recurringTasks as $recurring) {
-            $checkMsg = "Checking Rule ID: {$recurring->id} | Type: {$recurring->repeat_type}\n";
-            file_put_contents($logPath, $checkMsg, FILE_APPEND);
-
-            if ($this->process($recurring)) {
-                $successMsg = "CREATED: Task for Rule {$recurring->id}\n";
-                file_put_contents($logPath, $successMsg, FILE_APPEND);
-            } else {
-                $skipMsg = "SKIPPED: Rule {$recurring->id} (Condition not met)\n";
-                file_put_contents($logPath, $skipMsg, FILE_APPEND);
+                if ($this->process($recurring)) {
+                    $logBuffer .= "CREATED: Task for Rule {$recurring->id}\n";
+                } else {
+                    $logBuffer .= "SKIPPED: Rule {$recurring->id} (Condition not met)\n";
+                }
             }
-        }
+
+            // Write to disk once per 100 records instead of 100 times
+           Log::channel('daily')->info($logBuffer);
+
+        });
 
         return Command::SUCCESS;
     }
@@ -107,18 +78,37 @@ class GenerateRecurringTasks extends Command
     }
 
     /* ---------------- WEEKLY ---------------- */
+    /* ---------------- WEEKLY ---------------- */
     private function weekly(RecurringTask $recurring): bool
     {
+        // 1. Ensure the task is within its active date range (start_date to end_date)
+        if (!$recurring->isActive()) {
+            return false;
+        }
+
         $todayName = strtolower(now()->format('l'));
-        $allowedDays = array_map('strtolower', $recurring->week_days ?? []);
+
+        // 2. Handle the "Double-Encoding" gracefully if it's already in the DB
+        $days = $recurring->week_days;
+        if (is_string($days)) {
+            $days = json_decode($days, true) ?: [];
+        }
+
+        $allowedDays = array_map('strtolower', (array)$days);
 
         if (!in_array($todayName, $allowedDays)) {
             return false;
         }
 
-        $time = Carbon::parse($recurring->weekly_time ?? '00:00');
+        // 3. Determine the specific time to run
+        // Priority: recurring weekly_time -> task start_time -> midnight
+        $timeString = $recurring->weekly_time ?: ($recurring->task->start_time ?? '00:00');
+        $time = Carbon::parse($timeString);
+
+        // Create the execution point for TODAY
         $dateTime = now()->setTime($time->hour, $time->minute, 0);
 
+        // 4. Don't create if the scheduled time hasn't passed yet today
         if (now()->lt($dateTime)) {
             return false;
         }

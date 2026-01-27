@@ -324,7 +324,13 @@ body {
 .modern-scroll::-webkit-scrollbar-thumb:hover {
     background-color: #6c757d;
 }
-
+.select2-container .select2-selection--multiple {
+    min-height: auto;
+    padding: 6px 10px;
+}
+.select2-selection__choice {
+    margin-top: 4px !important;
+}
 /* =========================================================
    TABLES   
 ========================================================= */

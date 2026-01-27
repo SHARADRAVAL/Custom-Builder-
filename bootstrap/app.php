@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('recurring:generate')->everyMinute();
+        $schedule->command('tasks:update-due')->daily();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //
