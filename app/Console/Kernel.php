@@ -13,18 +13,18 @@ use App\Console\Commands\UpdateDueDays;
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
-        GenerateRecurringTasks::class,
-        UpdateDueDays::class,
-
+        \App\Console\Commands\GenerateRecurringTasks::class,
+        \App\Console\Commands\UpdateDueDays::class,
     ];
+
     protected function schedule(Schedule $schedule)
     {
         //Generate recurring tasks
         $schedule->command('recurring:generate')
             ->everyMinute()
-            ->withoutOverlapping() 
+            ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/schedule.log'));
-        
+
         //Update due days 
         $schedule->command('tasks:update-due')
             ->daily()

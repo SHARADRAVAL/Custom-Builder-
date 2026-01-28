@@ -86,13 +86,13 @@
 
                             <div class="mt-3">
                                 <label class="form-label">Assign To <span class="text-danger">*</span></label>
-
-                                <select id="user_ids" name="user_ids[]"
+                                <select id="user_id" name="user_ids[]"
                                     class="form-select select2 @error('user_ids') is-invalid @enderror" multiple required>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
                                 </select>
+
 
                                 @error('user_ids')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>

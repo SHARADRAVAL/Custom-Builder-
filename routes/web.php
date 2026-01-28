@@ -72,6 +72,15 @@ Route::controller(FormController::class)->group(function () {
     )->name('forms.submissions.datatable');
 });
 
+// routes/web.php
+Route::get('/users/search', function (\Illuminate\Http\Request $request) {
+    return \App\Models\User::where('name', 'like', '%' . $request->q . '%')
+        ->select('id', 'name')
+        ->limit(20)
+        ->get();
+});
+
+/* ---------------- TASKS ---------------- */
 
 Route::get('tasks/datatable', [TaskController::class, 'datatable'])->name('tasks.datatable');
 Route::resource('tasks', TaskController::class);

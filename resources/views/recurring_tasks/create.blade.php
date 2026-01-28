@@ -36,8 +36,8 @@
                             </div>
 
                             <!-- Assign User -->
-                            <div class="form-floating mb-3">
-                                <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" required>
+                            {{-- <div class="form-floating mb-3"> --}}
+                            {{-- <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" required>
                                     <option value="">Select User</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
@@ -45,17 +45,48 @@
                                             {{ $user->name }}
                                         </option>
                                     @endforeach
-                                </select>
+                                </select> --}}
+                            {{-- <select name="user_id" id="user_id"
+                                    class="form-select @error('user_id') is-invalid @enderror" required></select>
+                                <option value="">Select User</option>
+                                @if (old('user_id'))
+                                    <script>
+                                        window.__OLD_USER__ = @json(\App\Models\User::find(old('user_id')));
+                                    </script>
+                                @endif
+
                                 <label>Assign To *</label>
+                                @error('user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div> --}}
+
+                            <!-- Assign User -->
+                            <!-- Assign User -->
+                            <div class="form-floating mb-3">
+                                <select name="user_id" id="user_id"
+                                    class="form-select @error('user_id') is-invalid @enderror" required>
+                                    <option value="">Select User</option>
+                                </select>
+
+                                @if (old('user_id'))
+                                    <script>
+                                        window.__OLD_USER__ = @json(\App\Models\User::find(old('user_id')));
+                                    </script>
+                                @endif
+
+                                <label for="user_id">Assign To *</label>
+
                                 @error('user_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
+
+
                             <!-- Recurring -->
                             <div class="form-floating mb-3">
                                 <select name="recurring" id="recurring" class="form-select">
-                                    <option value="">None</option>
                                     <option value="daily" {{ old('recurring') == 'daily' ? 'selected' : '' }}>Daily
                                     </option>
                                     <option value="weekly" {{ old('recurring') == 'weekly' ? 'selected' : '' }}>Weekly
@@ -140,5 +171,13 @@
 @endsection
 
 @section('scripts')
+    <!-- Select2 CSS -->
+
+
+    <!-- jQuery -->
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
+
+    <!-- Select2 JS -->
+
     <script src="{{ asset('js/app.js') }}"></script>
 @endsection

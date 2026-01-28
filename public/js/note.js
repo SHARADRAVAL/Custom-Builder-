@@ -6,8 +6,78 @@ flatpickr(".datepicker", {
 let notesTable;
 
 // Load Notes tab content & initialize DataTable
+// function loadNotesTab() {
+//     $.get("{{ route('notes.view', $task->id) }}", function (html) {
+//         $("#notesList").html(html);
+
+//         const notesTableEl = $("#notesTable");
+
+//         if ($.fn.DataTable.isDataTable(notesTableEl)) {
+//             notesTableEl.DataTable().destroy();
+//         }
+
+//         // Inject search bar
+//         if (!$("#notesSearch").length) {
+//             const searchHtml = `
+//                 <div class="ms-auto mb-2">
+//                     <input type="text" id="notesSearch" class="form-control form-control-sm" placeholder="Search notes...">
+//                 </div>
+//             `;
+//             $("#notesHeader").append(searchHtml);
+//         }
+
+//         notesTable = notesTableEl.DataTable({
+//             processing: true,
+//             serverSide: true,
+//             ajax: "{{ route('notes.datatable', $task->id) }}",
+//             autoWidth: false,
+//             responsive: true,
+//             columns: [
+//                 {
+//                     data: "id",
+//                     name: "id",
+//                 },
+//                 {
+//                     data: "note",
+//                     name: "note",
+//                 },
+//                 {
+//                     data: "created_at",
+//                     name: "created_at",
+//                 },
+//                 {
+//                     data: "action",
+//                     name: "action",
+//                     orderable: false,
+//                     searchable: false,
+//                 },
+//             ],
+//             order: [[0, "desc"]],
+//             pageLength: 10,
+//             lengthChange: true,
+//             dom: '<"table-responsive"rt><"d-flex justify-content-between mt-2"<"length-div"l><"pagination-div"p>>i',
+//             drawCallback: function () {
+//                 $(".dropdown-toggle").each(function () {
+//                     new bootstrap.Dropdown(this);
+//                 });
+//                 $(".pagination-div .paginate_button")
+//                     .addClass("btn btn-sm btn-primary mx-1")
+//                     .removeClass("paginate_button");
+//             },
+//         });
+
+//         // Custom search input
+//         $("#notesSearch")
+//             .off("keyup")
+//             .on("keyup", function () {
+//                 notesTable.search(this.value).draw();
+//             });
+//     }).fail(function () {
+//         console.error("Failed to load notes view");
+//     });
+// }
 function loadNotesTab() {
-    $.get("{{ route('notes.view', $task->id) }}", function (html) {
+    $.get(window.noteRoutes.view, function (html) {
         $("#notesList").html(html);
 
         const notesTableEl = $("#notesTable");
@@ -16,57 +86,30 @@ function loadNotesTab() {
             notesTableEl.DataTable().destroy();
         }
 
-        // Inject search bar
         if (!$("#notesSearch").length) {
-            const searchHtml = `
+            $("#notesHeader").append(`
                 <div class="ms-auto mb-2">
                     <input type="text" id="notesSearch" class="form-control form-control-sm" placeholder="Search notes...">
                 </div>
-            `;
-            $("#notesHeader").append(searchHtml);
+            `);
         }
 
         notesTable = notesTableEl.DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('notes.datatable', $task->id) }}",
+            ajax: window.noteRoutes.datatable,
             autoWidth: false,
             responsive: true,
             columns: [
-                {
-                    data: "id",
-                    name: "id",
-                },
-                {
-                    data: "note",
-                    name: "note",
-                },
-                {
-                    data: "created_at",
-                    name: "created_at",
-                },
-                {
-                    data: "action",
-                    name: "action",
-                    orderable: false,
-                    searchable: false,
-                },
+                { data: "id", name: "id" },
+                { data: "note", name: "note" },
+                { data: "created_at", name: "created_at" },
+                { data: "action", orderable: false, searchable: false },
             ],
             order: [[0, "desc"]],
             pageLength: 10,
-            lengthChange: true,
-            dom: '<"table-responsive"rt><"d-flex justify-content-between mt-2"<"length-div"l><"pagination-div"p>>i',
-            drawCallback: function () {
-                $(".dropdown-toggle").each(function () {
-                    new bootstrap.Dropdown(this);
-                });
-                $(".pagination-div .paginate_button")
-                    .addClass("btn btn-sm btn-primary mx-1")
-                    .removeClass("paginate_button");
-            },
         });
 
-        // Custom search input
         $("#notesSearch")
             .off("keyup")
             .on("keyup", function () {
@@ -76,6 +119,31 @@ function loadNotesTab() {
         console.error("Failed to load notes view");
     });
 }
+
+// Add Note
+$(document).on("submit", "#noteForm", function (e) {
+    e.preventDefault();
+
+    $.post(window.noteRoutes.store, $(this).serialize(), function () {
+        $("#addNoteModal").modal("hide");
+        $("#noteForm")[0].reset();
+        loadNotesTab();
+    });
+});
+
+// Delete Note
+$(document).on("click", ".deleteNote", function () {
+    let id = $(this).data("id");
+
+    $.ajax({
+        url: "/notes/" + id,
+        type: "DELETE",
+        data: { _token: window.noteRoutes.csrf },
+        success: function () {
+            loadNotesTab();
+        },
+    });
+});
 
 // Load Notes tab when activated
 document.addEventListener("DOMContentLoaded", function () {

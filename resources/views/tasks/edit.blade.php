@@ -12,14 +12,14 @@
 
 @section('nav-button')
     <div class="d-flex align-items-center gap-1">
-        <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#commentFeedbackModal">
-            <i class="bi bi-chat-left-text me-1"></i> Complate
+        <button type="button" class="btn btn-primary  fx-grow-1" data-bs-toggle="modal" data-bs-target="#commentFeedbackModal">
+            Complate
         </button>
 
         {{-- Start Task Button --}}
         @if ($task->status === 'pending')
             <button type="button" id="startTaskBtn" class="btn btn-primary">
-                <i class="bi bi-play-circle me-1"></i> Start Task
+                Start Task
             </button>
         @else
             <span class="badge bg-secondary text-capitalize p-2">{{ $task->status }}</span>
@@ -174,6 +174,49 @@
                 </div>
             </div>
 
+
+
+            {{-- MODAL: Quick Comment & Feedback (AJAX) --}}
+            <div class="modal fade" id="commentFeedbackModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="commentFeedbackForm">
+                            @csrf
+                            <div class="modal-header">
+                                <h5 class="modal-title">Quick Update</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Feedback <span class="text-danger">*</span></label>
+                                    <select id="modal_feedback" name="feedback" class="form-control" required>
+                                        <option value="">Select Feedback</option>
+                                        <option value="Excellent" {{ $task->feedback == 'Excellent' ? 'selected' : '' }}>
+                                            Excellent
+                                        </option>
+                                        <option value="Good" {{ $task->feedback == 'Good' ? 'selected' : '' }}>Good
+                                        </option>
+                                        <option value="Average" {{ $task->feedback == 'Average' ? 'selected' : '' }}>
+                                            Average
+                                        </option>
+                                        <option value="Poor" {{ $task->feedback == 'Poor' ? 'selected' : '' }}>Poor
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Comment <span class="text-danger">*</span></label>
+                                    <textarea id="modal_comment" name="comment" class="form-control" rows="4" required>{{ $task->comment }}</textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             {{-- NOTES TAB --}}
             <div class="tab-pane fade" id="notes">
                 <div class="card shadow-sm border-0">
@@ -183,43 +226,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- MODAL: Quick Comment & Feedback (AJAX) --}}
-    <div class="modal fade" id="commentFeedbackModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="commentFeedbackForm">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title">Quick Update</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Feedback <span class="text-danger">*</span></label>
-                            <select id="modal_feedback" name="feedback" class="form-control" required>
-                                <option value="">Select Feedback</option>
-                                <option value="Excellent" {{ $task->feedback == 'Excellent' ? 'selected' : '' }}>Excellent
-                                </option>
-                                <option value="Good" {{ $task->feedback == 'Good' ? 'selected' : '' }}>Good</option>
-                                <option value="Average" {{ $task->feedback == 'Average' ? 'selected' : '' }}>Average
-                                </option>
-                                <option value="Poor" {{ $task->feedback == 'Poor' ? 'selected' : '' }}>Poor</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Comment <span class="text-danger">*</span></label>
-                            <textarea id="modal_comment" name="comment" class="form-control" rows="4" required>{{ $task->comment }}</textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -252,6 +258,7 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ asset('js/comment_feed.js') }}"></script>
     <script>
         // Global Data for external JS
         window.taskAppData = {
@@ -259,8 +266,14 @@
             commentFeedbackUrl: "{{ route('tasks.comment_feedback', $task->id) }}",
             csrfToken: "{{ csrf_token() }}"
         };
+        window.noteRoutes = {
+            view: "{{ route('notes.view', $task->id) }}",
+            datatable: "{{ route('notes.datatable', $task->id) }}",
+            store: "{{ route('notes.store') }}",
+            csrf: "{{ csrf_token() }}"
+        };
     </script>
 
     {{-- Load external JS --}}
-    <script src="{{ asset('js/comment_feed.js') }}"></script>
+    <script src="{{ asset('js/note.js') }}"></script>
 @endsection

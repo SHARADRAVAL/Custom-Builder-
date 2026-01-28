@@ -21,10 +21,10 @@ class Task extends Model
         'reminder_sent',
         'started_at',
         'completed_at',
-        'comment',   // ✅ add this
-        'feedback',  // ✅ add this
+        'comment',   
+        'feedback',  
+        'parent_task_id', // NEW
     ];
-
 
     protected $casts = [
         'start_time'    => 'datetime',
@@ -32,38 +32,35 @@ class Task extends Model
         'started_at'    => 'datetime',
         'completed_at'  => 'datetime',
         'reminder_sent' => 'boolean',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
 
-    /**
-     * Relationship: Recurring Rule
-     */
     public function recurring()
     {
         return $this->hasOne(RecurringTask::class);
     }
 
-    /**
-     * Relationship: Task Notes
-     */
     public function notes()
     {
         return $this->hasMany(Note::class);
     }
 
-    /**
-     * Relationship: Single User (Legacy Support)
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relationship: Multiple Users (Many-to-Many)
-     * Requirement: Needs 'task_user' pivot table
-     */
     public function users()
     {
         return $this->belongsToMany(User::class, 'task_user');
+    }
+
+    /**
+     * Relationship: Parent Task (Recurring Template)
+     */
+    public function parentTask()
+    {
+        return $this->belongsTo(Task::class, 'parent_task_id');
     }
 }

@@ -3,8 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Console\Scheduling\Schedule; // Essential for scheduling
-use Illuminate\Support\Facades\Log;
+use Illuminate\Console\Scheduling\Schedule; 
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,8 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('recurring:generate')->everyMinute();
-        $schedule->command('tasks:update-due')->daily();
+        // High-Performance Scanner
+        $schedule->command('recurring:generate')
+            ->everyMinute()
+            ->withoutOverlapping(); // CRITICAL: Prevents server crash at 10k users
+
+        // Daily Cleanup
+        $schedule->command('tasks:update-due')
+            ->daily()
+            ->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //

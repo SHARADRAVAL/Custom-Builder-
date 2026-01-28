@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('parent_task_id')->nullable();
+            $table->foreign('parent_task_id')->references('id')->on('tasks')->onDelete('set null');
+
             // Task details
             $table->string('title');
             $table->text('description')->nullable();
@@ -25,6 +28,7 @@ return new class extends Migration
 
             // User relation
             $table->foreignId('user_id')
+                ->nullable()
                 ->constrained()
                 ->onDelete('cascade');
 
@@ -36,11 +40,11 @@ return new class extends Migration
             $table->boolean('reminder_sent')
                 ->default(false)
                 ->comment('Email reminder sent 15 minutes before start');
-            
+
             //Comment and feedback 
             $table->text('comment')->nullable();
             $table->text('feedback')->nullable();
-            
+
             // Task lifecycle timestamps
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();

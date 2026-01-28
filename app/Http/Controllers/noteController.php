@@ -58,7 +58,7 @@ class NoteController extends Controller
         $note->note = $request->note;
         $note->save();
 
-        return response()->json(['success' => true]);
+        return redirect()->back()->with('success', 'Note added');
     }
 
     // Delete note via AJAX
