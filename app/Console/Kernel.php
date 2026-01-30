@@ -13,8 +13,8 @@ use App\Console\Commands\UpdateDueDays;
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
-        \App\Console\Commands\GenerateRecurringTasks::class,
-        \App\Console\Commands\UpdateDueDays::class,
+        GenerateRecurringTasks::class,
+        UpdateDueDays::class,
     ];
 
     protected function schedule(Schedule $schedule)

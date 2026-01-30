@@ -32,19 +32,19 @@ class ProcessRecurringTask implements ShouldQueue
 
         DB::transaction(function () use ($template) {
 
-            // ✅ Duplicate check using parent_task_id + date
+            //  Duplicate check using parent_task_id + date
             $exists = Task::where('parent_task_id', $template->id)
                 ->whereDate('start_time', $this->executionTime->toDateString())
                 ->exists();
 
             if ($exists) return;
 
-            // ✅ Check skip_dates before creating task
+            //  Check skip_dates before creating task
             if (!empty($this->recurring->skip_dates) && in_array($this->executionTime->toDateString(), $this->recurring->skip_dates)) {
                 return; // Skip task for this date
             }
 
-            // 1️⃣ Create new task with parent_task_id
+            //  Create new task with parent_task_id
             $newTask = Task::create([
                 'title'          => $template->title,
                 'description'    => $template->description,
@@ -55,15 +55,16 @@ class ProcessRecurringTask implements ShouldQueue
                 'parent_task_id' => $template->id, // NEW
             ]);
 
-            // 2️⃣ Sync users from the template task
+            // Sync users from the template task
             if ($template->users->isNotEmpty()) {
                 $newTask->users()->sync($template->users->pluck('id'));
             }
 
-            // 3️⃣ Update next_run_at for recurring rule
+            //  Update next_run_at for recurring rule
             $this->recurring->update([
                 'next_run_at' => $this->recurring->calculateNextRun()
             ]);
         });
     }
 }
+
