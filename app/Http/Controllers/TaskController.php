@@ -263,10 +263,11 @@ class TaskController extends Controller
 
 
         return DataTables::of($query)
-            ->addColumn('task_id', function ($row) {
-                // Show parent template ID if exists, else task's own ID
-                return $row->parent_task_id ?? $row->id;
-            })
+            // ->addColumn('task_id', function ($row) {
+            //     // Show parent template ID if exists, else task's own ID
+            //     return $row->parent_task_id ?? $row->id;
+            // })
+            ->addIndexColumn()
             ->addColumn('user', function ($row) {
                 $names = $row->users->pluck('name')->take(5)->toArray();
                 return implode(', ', $names) . (count($row->users) > 5 ? ' ...' : '');

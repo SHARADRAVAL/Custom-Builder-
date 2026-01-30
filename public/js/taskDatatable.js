@@ -9,7 +9,8 @@ $(document).ready(function () {
         autoWidth: false,
         responsive: true,
         columns: [
-            { data: "id", name: "id" },
+            // { data: "id", name: "id" },
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: "title", name: "title" },
             { data: "description", name: "description" },
             { 
@@ -30,7 +31,7 @@ $(document).ready(function () {
                 searchable: false,
             },
         ],
-        order: [[0, "asc"]],
+        order: [[0, "dec"]],
         pageLength: 10,
         dom: '<"table-responsive"rt><"d-flex justify-content-between mt-2 ps-3"<"length-div"l><"pagination-div pe-2"p>>i',
         drawCallback: function () {

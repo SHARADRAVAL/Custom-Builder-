@@ -20,7 +20,7 @@ class GenerateRecurringTasks extends Command
         RecurringTask::with('task.users')
             ->whereNotNull('next_run_at')
             ->where('next_run_at', '<=', $now)
-            ->chunk(50, function ($rules) use ($now) {
+            ->chunkById(200, function ($rules) use ($now) {
 
                 foreach ($rules as $recurring) {
 
@@ -29,7 +29,7 @@ class GenerateRecurringTasks extends Command
 
                     $executionTime = $this->getExecutionTime($recurring, $now);
                     if (!$executionTime) continue;
-
+    
                     // Dispatch job
                     ProcessRecurringTask::dispatch($recurring, $executionTime->format('Y-m-d H:i:s'));
                     $this->info("Dispatched generation for: {$template->title}");
