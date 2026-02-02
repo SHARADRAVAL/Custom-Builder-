@@ -29,7 +29,7 @@ class SendTaskStartEmail implements ShouldQueue
             return;
         }
 
-        // ✅ Optional: prevent duplicate start emails
+        // Optional: prevent duplicate start emails
         if ($this->task->status !== 'pending') {
             return;
         }

@@ -120,9 +120,8 @@ Route::prefix('recurring-tasks')->name('recurring-tasks.')->group(function () {
     Route::post('recurring-tasks/{recurring}/complete', [RecurringTaskController::class, 'complete'])->name('recurring-tasks.complete');
 });
 
-Route::get('/test-log', function () {
-    Log::info('🔥 Log system working at ' . now());
-    return 'Log test done';
+Route::get('/sentry-test', function () {
+    throw new Exception('Sentry DSN test working!');
 });
 
 Route::get('/tasks/{task}/notes/view', [NoteController::class, 'view'])->name('notes.view');

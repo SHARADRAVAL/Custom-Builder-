@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Note;
 use Yajra\DataTables\DataTables;
 
-class NoteController extends Controller
+class noteController extends Controller
 {
 
     // Return the view for notes (for AJAX)

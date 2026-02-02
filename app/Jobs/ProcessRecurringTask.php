@@ -27,7 +27,8 @@ class ProcessRecurringTask implements ShouldQueue
 
     public function handle(): void
     {
-        $template = $this->recurring->task()->with('users')->first();
+        // $template = $this->recurring->task()->with('users')->first();
+        $template = RecurringTask::with('task.users')->find($this->recurring->id)?->task;
         if (!$template) return;
 
         DB::transaction(function () use ($template) {
@@ -61,9 +62,10 @@ class ProcessRecurringTask implements ShouldQueue
             }
 
             //  Update next_run_at for recurring rule
-            $this->recurring->update([
-                'next_run_at' => $this->recurring->calculateNextRun()
-            ]);
+            $nextRun = $this->recurring->calculateNextRun();
+
+            $this->recurring->update(['next_run_at' => $nextRun]);
+
         });
     }
 }
